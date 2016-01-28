@@ -9,9 +9,7 @@
     "gulp-jade": "*",
     "gulp-jshint": "^1.7.1",
     "gulp-livereload": "*",
-    "gulp-stylus": "*",
     "jshint-stylish": "^0.4.0",
-    "nib": "*",
     "uglify-js": "^2.6.1"
   }
 }
