@@ -1,0 +1,39 @@
+ip 					= "http://176.126.241.139:67/"
+
+_avenir 		= "avenir/avenir"
+_bebas 			= "bebas/BEBAS"
+_manksans 	= "manksans/manksans"
+_walkway 		= "walkway/walkway"
+_krungthep 	= "krungthep/krungthep"
+_antonio 		= "antonio/antonio"
+_ayita 			= "ayita/ayita"
+_proxima 		= "proxima/Proxima"
+_furore 		= "furore/furore"
+
+_geomanist_light   = "geomanist-light/geomanist-light"
+_geomanist_thin    = "geomanist-thin/geomanist-thin"
+_geomanist_regular = "geomanist-regular/geomanist-regular"
+_geomanist_book    = "geomanist-book/geomanist-book"
+_geomanist_medium  = "geomanist-medium/geomanist-medium"
+_geomanist_bold    = "geomanist-bold/geomanist-bold"
+_geomanist_black   = "geomanist-black/geomanist-black"
+_geomanist_ultra   = "geomanist-ultra/geomanist-ultra"
+
+ffont(name, path)
+	@font-face 
+		font-family name
+		src url(ip + path + '.eot')
+		src url(ip + path + '.svg#' + name) format('svg'), url(ip + path + '.ttf') format('truetype'), url(ip + path + '.woff') format('woff')
+		font-weight normal
+		font-style normal
+
+
+
+/** initialise Font Family
+
+ffont('Avenir', _avenir)
+
+html
+	font-family 'Avenir'
+
+**/

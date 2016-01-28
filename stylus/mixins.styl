@@ -1,0 +1,94 @@
+hide()
+  display none
+  visibility hidden
+
+show()
+  &.active
+    display block
+    visibility visible
+
+over(col)
+  &:hover
+    cursor pointer
+    color col
+
+zero()
+  margin 0
+  padding 0
+
+
+/* ----  I AM FRAMED  ---- */
+horizon(size=1em, padding-sides=1em, color=black, padding-top=2em, thickness=1px)
+  border-bottom none
+  border-left none
+  border-right none
+  border-top-style solid
+  border-top-width thickness
+  border-top-color color
+  legend
+    font-size size
+    color color
+    text-align center
+    padding padding-top padding-sides
+
+box-arrow(x, y, size, border, bg-col, bord-col)
+  position: relative
+  background: bg-col
+  border: border solid bord-col
+  &:after, &:before
+    top y
+    left x
+    border solid transparent
+    content " "
+    height 0
+    width 0
+    position absolute
+    pointer-events none
+  &:after
+    border-top-color bg-col
+    border-width size
+    margin-left -(size)
+  &:before
+    border-top-color bord-col
+    border-width ((size+border)*1.06)
+    margin-left -(floor((size+border)*1.06))
+
+checkbox(dimension, pad, icon, colour_bg, colour_font)
+  width dimension
+  height dimension
+  position relative
+  display inline-block
+  background-color rgba(0,0,0,.2)
+  border 2px solid colour_font
+  border-radius 4px
+  padding pad
+  label
+    cursor pointer
+    position absolute
+    width 100%
+    height 100%
+    top 0
+    left 0
+    span
+      margin-left (dimension * 2.5)
+      height 100%
+      vertical-align top
+  input[type="checkbox"]
+    display none
+    appearance none
+  input[type="checkbox"]:checked + label:after
+    position absolute
+    top 0
+    cursor pointer
+    background-color rgba(0,0,0,.2)
+    border-radius 4px
+    display inline-block
+    font-family FontAwesome
+    padding pad
+    background-color colour_bg
+    content icon
+    color colour_font
+    text-align center
+    vertical-align middle
+
+//  checkbox(1em, .125em, '\f006', 'yellowgreen', 'black')
