@@ -42,7 +42,7 @@ gulp.task('jade',function() {
 
 // JAVASCRIPT
 gulp.task('js', ['lint'], function() {
-  gulp.src('./js/app.js')
+  gulp.src('./js/**/*.js')
     .pipe(gulp.dest(paths.dest + 'js'))
     .pipe(refresh())
 })
