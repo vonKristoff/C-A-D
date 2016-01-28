@@ -1,6 +1,6 @@
 (function(Global){
 
-    function cad (config) {;
+    function cad (config) {
 
         var api, 
             canvas, 

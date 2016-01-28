@@ -16,7 +16,7 @@ ctx.clear()
         color: "#009"
     }
 })
-.startPath(100,150)
+.startPath(75,100)
 .defineSegments([
     { lineTo: [200,200] },
     { lineTo: [100,50] }
