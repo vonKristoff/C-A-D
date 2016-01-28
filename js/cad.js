@@ -1,4 +1,4 @@
-(function(){
+(function(Global){
 
     function cad (config) {;
 
@@ -224,5 +224,7 @@
 
         return api;
     };
-    window.cad = cad;
-})();
+
+    Global.cad = cad;
+
+})(window);

@@ -1,16 +1,17 @@
 {
   "name": "canvas-wrapper",
   "version": "0.1.0",
-  "dependencies": {
-    "jquery": "*"
+  "scripts": {
+    "build": "cp js/cad.js dist/cad.js && uglifyjs js/cad.js -o dist/cad.min.js"
   },
   "devDependencies": {
     "gulp": "*",
     "gulp-jade": "*",
+    "gulp-jshint": "^1.7.1",
     "gulp-livereload": "*",
     "gulp-stylus": "*",
+    "jshint-stylish": "^0.4.0",
     "nib": "*",
-    "gulp-jshint": "^1.7.1",
-    "jshint-stylish": "^0.4.0"
+    "uglify-js": "^2.6.1"
   }
 }
