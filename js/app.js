@@ -35,11 +35,12 @@ ctx.clear()
         color: "red"
     }
 })
+.transform({rotate:Math.PI / 2.3, translate: {x:200, y:200}})
 .rect({
     fill: [40,40,25,25]
 })
 .rect({
-    stroke: [400,400,50,50]
+    stroke: [40,40,50,50]
 })
 .popState()
 .startPath(275,275)
