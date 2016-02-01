@@ -67,25 +67,31 @@ You can **plot** a load of methods together in a save like state, and then **pri
 ### Methods
 
 * `__raw__`: {DOM} - canvas
-* `__raw__ctx__`: {object} - context
+* `__raw__ctx__`: {_object_} - context
+* `getCanvas`: (type) {_object_} - if not 'raw', return a defined virtual canvas context
 * `element`: returns {DOM} - canvas
 * `clear`: (x, y, w, h) <- clears the canvas
-* `setStyles`: 
+* `switchContext`: (target) - switch contexts between main visible and virtual
+* `setStyles`: {_fill, stroke_}
 * `startPath`: 
 * `defineSegments`: 
 * `endPath`: 
-* `rect`: 
+* `bitmap`: create / use / done - create virtual canvas to draw from
+* `grid`: build / use / done - generate grid coordinates
+* `rect`: {_fill_: [w, h, x, y]}
 * `text`: 
-* `transform`: 
+* `transform`: {_method_: [args])
 * `shiftPathTo`: 
 * `plot`: (name, fn) - define a set of instructions
 * `print`: (name, array) - plays out the rule
-* `pushState`: 
-* `popState`: 
+* `pushState`: save current context
+* `popState`: reset coordinates
 * `getImage`: 
 * `putImage`: 
 * `clip`: 
 * `info`: {_object_} - returns the instance config
+
+
 
 ---
 

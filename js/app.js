@@ -5,12 +5,28 @@ var ctx = cad({
 
 document.body.appendChild(ctx.element());
 
-ctx.plot('simon', function (a, w, c) {
-    this.clear();
-    console.log(arguments,a);
-})
+ctx.bitmap().create('shape', { width:10, height: 10 }).use('shape', function () {
+    this.setStyles({
+        fill: { color: "red" }
+    }).rect({
+        fill: [0, 0, 5, 5]
+    }).setStyles({
+        fill: { color: "purple" }
+    }).rect({
+        fill: [5, 5, 5, 5]
+    })
+}).done().grid().build('standard',500,500,20).use(function (item, collection, index) {
 
-ctx.clear()
+    this.getCanvas('raw').drawImage(this.getCanvas('shape').canvas, item.x, item.y);
+    
+}).done();
+
+// ctx.plot('simon', function (a, w, c) {
+//     this.clear();
+//     console.log(arguments,a);
+// })
+
+ctx
 .setStyles({
     alpha: 0.8,
     stroke: {
@@ -56,5 +72,5 @@ ctx.clear()
     fill: true
 });
 
-ctx.print('simon', ['test', 2, 3]);
+// ctx.print('simon', ['test', 2, 3]);
 

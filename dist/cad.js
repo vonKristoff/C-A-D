@@ -14,7 +14,12 @@
             quadraticCurveTo: 1,
             bezierCurveTo: 1
         };
-        var cache = {};
+        var cache = {},
+            store = {
+                ctx: null,
+                grids: {},
+                vctx: {}
+            };
 
         // process the options
         config = config || {};
@@ -32,7 +37,8 @@
             canvas.style.height = config.height + "px";
         }
 
-        ctx = canvas.getContext(config.type);
+        store.ctx = canvas.getContext(config.type);
+        ctx = store.ctx;
 
         function element() {
             return canvas;
@@ -163,7 +169,7 @@
 
             opts = opts || {};
 
-            if (opts.bitmap) return ctx.getImageData(opts.bitmap.x,opts.bitmap.y,opts.bitmap.width,opts.bitmap.height);
+            if (opts.bitmap) return ctx.getImageData(opts.bitmap.x, opts.bitmap.y, opts.bitmap.width, opts.bitmap.height);
             else if (opts.dataURL) {
                 if (("x" in opts.dataURL && "y" in opts.dataURL) || ("width" in opts.dataURL && "height" in opts.dataURL)) {
                     
@@ -191,7 +197,7 @@
             var args;
             opts = opts || {};
 
-            if (opts.bitmap) ctx.putImageData(src,opts.bitmap.x || 0, opts.bitmap.y || 0);
+            if (opts.bitmap) ctx.putImageData(src, opts.bitmap.x || 0, opts.bitmap.y || 0);
             else if (opts.dataURL) {
                 args = [src];
 
@@ -209,15 +215,112 @@
             return api;
         }
 
+        function grid (target) {
+            return {
+                _id: (target)? target : null,
+                _collection: (target)? store.grids[target] : null,
+                get: function(id) {
+                    var tgt = (id)? id : this._id;
+                    return store.grids[tgt];
+                },
+                add: function(id, grid) {
+                    store.grids[id] = this._collection = grid;
+                },
+                build: function (id, width, height, size) {
+
+                    this._id = id;
+
+                    var grid = {
+                        size: size,
+                        nRow: Math.ceil(width / size),
+                        nCol: Math.ceil(height / size),
+                        num: 0,
+                        blocks: []
+                    }
+                    var block = {
+                        index: null,
+                        col: -1,
+                        row: 0,
+                        x: 0,
+                        y: 0
+                    }
+                    grid.num = grid.nRow * grid.nCol;
+
+                    for(var i=0; i<grid.num; i++) {
+                        var b = Object.create(block);
+                        b.index = i;
+                        b.row = i % grid.nRow;
+                        if(b.row == 0) block.col++;
+                        b.x = b.row * grid.size;
+                        b.y = b.col * grid.size;
+
+                        grid.blocks[i] = b;
+                    }
+
+                    this.add(id, grid);
+                    return this
+                },
+                use: function (cmd) {
+                    this._collection.blocks.forEach(function (item, index) {
+                        cmd.apply(api, [item, this._collection, index])
+                    })
+                    return this
+                },
+                done: function () {
+                    return this
+                }.bind(api)
+            }
+        }
+        
+        function getCanvas (type) {
+            if(type == 'raw') {
+                return this.__raw__ctx__;
+            } else {
+                return store.vctx[type]
+            }
+        }
+
+        function switchContext(id) {
+            ctx = (!id)? store.ctx : store.vctx[id];
+            return api
+        }
+
+        function bitmap () {
+            return {
+                create: function (name, opts, cmd) {
+
+                    var tmp = document.createElement('canvas');
+                    tmp.width = opts.width; tmp.height = opts.height;
+                    store.vctx[name] = tmp.getContext("2d");
+
+                    return this
+                },
+                use: function (name, cmd) {
+                    api.switchContext(name);
+                    cmd.call(api)
+                    return this
+                },
+                done: function () {
+                    this.switchContext();
+                    return this
+                }.bind(api)
+            }
+        }
+
+
         api = {
             __raw__: canvas,
             __raw__ctx__: ctx,
+            getCanvas: getCanvas,
             element: element,
             clear: clear,
+            switchContext: switchContext,
             setStyles: setStyles,
             startPath: startPath,
             defineSegments: defineSegments,
             endPath: endPath,
+            bitmap: bitmap,
+            grid: grid,
             rect: rect,
             text: text,
             transform: transform,
