@@ -46,6 +46,21 @@ The idea is that the methods are helper functions for the HTML5 Canvas API, but 
 	    stroke: true,
 	    fill: true
 	})
+	
+#### Groups
+
+You can **plot** a load of methods together in a save like state, and then **print** them as neccessary passing any _arguments_ as required.
+
+	// define a group
+	ctx.plot('box-frame', function (x, y) {
+		this.clear()
+			.rect({
+    			fill: [40, 40, x, y]
+			})
+	});
+	
+	// play out that group with input
+	ctx.print('box-frame', [10, 20]);
 
 ---
 
@@ -63,6 +78,8 @@ The idea is that the methods are helper functions for the HTML5 Canvas API, but 
 * `text`: 
 * `transform`: 
 * `shiftPathTo`: 
+* `plot`: (name, fn) - define a set of instructions
+* `print`: (name, array) - plays out the rule
 * `pushState`: 
 * `popState`: 
 * `getImage`: 

@@ -5,6 +5,11 @@ var ctx = cad({
 
 document.body.appendChild(ctx.element());
 
+ctx.plot('simon', function (a, w, c) {
+    this.clear();
+    console.log(arguments,a);
+})
+
 ctx.clear()
 .setStyles({
     alpha: 0.8,
@@ -50,3 +55,6 @@ ctx.clear()
 .endPath({
     fill: true
 });
+
+ctx.print('simon', ['test', 2, 3]);
+

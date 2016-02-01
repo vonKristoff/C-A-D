@@ -14,6 +14,7 @@
             quadraticCurveTo: 1,
             bezierCurveTo: 1
         };
+        var cache = {};
 
         // process the options
         config = config || {};
@@ -43,7 +44,14 @@
 
             return api;
         }
-
+        function plot(name, action) {
+            cache[name] = action;
+            return api;
+        }
+        function print(name, args) {
+            cache[name].apply(this, args);
+            return api;
+        }
         function setStyles(styles) {
             styles = styles || {};
 
@@ -214,6 +222,8 @@
             text: text,
             transform: transform,
             shiftPathTo: shiftPathTo,
+            plot: plot,
+            print: print,
             pushState: pushState,
             popState: popState,
             getImage: getImage,
