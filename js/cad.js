@@ -138,6 +138,17 @@
 
             return api;
         }
+        function circ(opts) {
+            opts = opts || {};
+            console.log(opts);
+            ctx.beginPath();
+            ctx.arc(opts.x, opts.y, opts.r, 0, Math.PI*2, true);
+            ctx.closePath();
+            if (opts.stroke) ctx.stroke();
+            else if (opts.fill) ctx.fill();
+
+            return api;
+        }
 
         function text(opts) {
             opts = opts || {};
@@ -162,6 +173,42 @@
         function pushState() { ctx.save(); return api; }
         function popState() { ctx.restore(); return api; }
         function clip() { ctx.clip(); return api; }
+
+        function drawType (opts) {
+            // Options
+            // type, style, coords, dimensions, transform
+            var $this = opts.ctx;
+            var opts = opts || {}, tx = 0, ty = 0;
+            $this.pushState();
+            if (opts.style) $this.setStyles(opts.style);
+            if (opts.transform) {
+                tx = (opts.transform.center)? opts.coords.x + (opts.dimensions.w / 2) : opts.coords.x,
+                ty = (opts.transform.center)? opts.coords.y + (opts.dimensions.h / 2) : opts.coords.y;
+                $this.transform({
+                    translate: { x: tx, y: ty },
+                    rotate: (opts.transform.rotate) ? opts.transform.rotate : 0,
+                    scale: (opts.transform.scale) ? opts.transform.scale : 0
+                })
+            }
+            switch (opts.type) {
+                case 'rect':
+                    $this.rect({
+                        fill: [0,0,opts.dimensions.w, opts.dimensions.h]
+                    })
+                break;
+                case 'circ':
+                    $this.circ({
+                        x: -(opts.dimensions.w / 2),
+                        y: -(opts.dimensions.h / 2),
+                        r: opts.dimensions.w,
+                        fill: true
+                    })
+                break;
+            }
+            $this.popState();
+
+            return api
+        }
 
         function getImage(opts) {
             var tmp, 
@@ -271,8 +318,8 @@
                 }.bind(api)
             }
         }
-        
-        function getCanvas (type) {
+
+        function getCanvas(type) {
             if(type == 'raw') {
                 return this.__raw__ctx__;
             } else {
@@ -321,7 +368,9 @@
             endPath: endPath,
             bitmap: bitmap,
             grid: grid,
+            drawType: drawType,
             rect: rect,
+            circ: circ,
             text: text,
             transform: transform,
             shiftPathTo: shiftPathTo,
