@@ -40,6 +40,25 @@
         store.ctx = canvas.getContext(config.type);
         ctx = store.ctx;
 
+        /**
+         * coordinate system
+         * @type {api}
+         */
+        var syx = {
+            convertToDecimal: function (axis) {
+                return {
+                    x: config.width / axis.x,
+                    y: config.height / axis.y
+                }
+            },
+            convertToPixel: function (axis) {
+                return {
+                    x: config.width * axis.x,
+                    y: config.height * axis.y
+                }
+            }
+        }
+
         function element() {
             return canvas;
         }
@@ -140,7 +159,6 @@
         }
         function circ(opts) {
             opts = opts || {};
-            console.log(opts);
             ctx.beginPath();
             ctx.arc(opts.x, opts.y, opts.r, 0, Math.PI*2, true);
             ctx.closePath();
@@ -173,41 +191,54 @@
         function pushState() { ctx.save(); return api; }
         function popState() { ctx.restore(); return api; }
         function clip() { ctx.clip(); return api; }
-
-        function drawType (opts) {
-            // Options
-            // type, style, coords, dimensions, transform
+        /**
+         * predefined shapes - with relative coordinates
+         * @param  {Object} opts { ctx: target context, 
+         *                         coords: {x,y}, type: shape, style: {}, 
+         *                         dimensions: {w,h}, offset: {x,y}, transform: {}}
+         * @return {Object}      api
+         */
+        function shape (opts) {
             var $this = opts.ctx;
-            var opts = opts || {}, tx = 0, ty = 0;
+            var opts = opts || {}, 
+                tx = 0, ty = 0, ox = 0, oy = 0;
+            if(opts.offset) {
+                ox = opts.offset.x;
+                oy = opts.offset.y;
+            }
             $this.pushState();
             if (opts.style) $this.setStyles(opts.style);
             if (opts.transform) {
-                tx = (opts.transform.center)? opts.coords.x + (opts.dimensions.w / 2) : opts.coords.x,
-                ty = (opts.transform.center)? opts.coords.y + (opts.dimensions.h / 2) : opts.coords.y;
+                tx = (opts.transform.center) ? -(opts.dimensions.w / 2) : 0,
+                ty = (opts.transform.center) ? -(opts.dimensions.h / 2) : 0;
                 $this.transform({
-                    translate: { x: tx, y: ty },
-                    rotate: (opts.transform.rotate) ? opts.transform.rotate : 0,
+                    translate: { x: opts.coords.x, y: opts.coords.y },
+                    rotate: (opts.transform.rotate) ? opts.transform.rotate : 0.1,
                     scale: (opts.transform.scale) ? opts.transform.scale : 0
                 })
             }
-            switch (opts.type) {
-                case 'rect':
-                    $this.rect({
-                        fill: [0,0,opts.dimensions.w, opts.dimensions.h]
-                    })
-                break;
-                case 'circ':
-                    $this.circ({
-                        x: -(opts.dimensions.w / 2),
-                        y: -(opts.dimensions.h / 2),
-                        r: opts.dimensions.w,
-                        fill: true
-                    })
-                break;
-            }
+            shapes[opts.type].call($this, tx, ty, ox, oy, opts);
             $this.popState();
 
             return api
+        }
+        /**
+         * shapes lib
+         */
+        var shapes = {
+            rect: function (tx, ty, ox, oy, opts) {
+                this.rect({
+                    fill: [tx + ox, ty + oy, opts.dimensions.w, opts.dimensions.h]
+                })
+            },
+            circ: function (tx, ty, ox, oy, opts) {
+                this.circ({
+                    x: tx + (opts.dimensions.w / 2) + ox,
+                    y: ty + (opts.dimensions.h / 2) + oy,
+                    r: opts.dimensions.w / 2,
+                    fill: opts.style
+                })
+            }
         }
 
         function getImage(opts) {
@@ -368,7 +399,7 @@
             endPath: endPath,
             bitmap: bitmap,
             grid: grid,
-            drawType: drawType,
+            shape: shape,
             rect: rect,
             circ: circ,
             text: text,

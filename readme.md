@@ -78,12 +78,14 @@ You can **plot** a load of methods together in a save like state, and then **pri
 * `endPath`: 
 * `bitmap`: create / use / done - create virtual canvas to draw from
 * `grid`: build / use / done - generate grid coordinates
+* `shape`: draw predefined shapes with correct coordinates for rotations
+* `circ`: {}
 * `rect`: {_fill_: [w, h, x, y]}
 * `text`: 
 * `transform`: {_method_: [args])
 * `shiftPathTo`: 
 * `plot`: (name, fn) - define a set of instructions
-* `print`: (name, array) - plays out the rule
+* `print`: (name, array) - plays out the rule from `plot[name]`
 * `pushState`: save current context
 * `popState`: reset coordinates
 * `getImage`: 

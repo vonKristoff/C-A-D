@@ -6,6 +6,29 @@ var ctx = cad({
 document.body.appendChild(ctx.element());
 
 ctx
+    .setStyles({
+        stroke: {
+            width: .5,
+            color: "rgba(0,0,0,.5)"   
+        }
+    })
+    .startPath(250,0)
+    .defineSegments([
+        { lineTo: [250,500] }
+    ])
+    .endPath({
+        close: false,
+        stroke: true,
+        fill: false
+    })
+    .startPath(0,250)
+    .defineSegments([
+        { lineTo: [500,250] }
+    ])
+    .endPath({
+        close: true,
+        stroke: true
+    })
     .pushState()
     .setStyles({fill: {color: "red"}})
     .transform({translate: {x:250, y:250}, rotate:.3})
@@ -15,14 +38,26 @@ ctx
     .popState()
     .rect({
         fill: [100,100,50,50]
-    }).drawType({
+    })
+    .shape({
         ctx: ctx,
         type: 'circ',
-        style: {color: 'red'},
+        style: {fill: {color: '#0f9'}},
         coords: {x: 250, y: 250},
         dimensions: {w: 20, h:20},
         transform: {
             center: true
+        }
+    })
+    .shape({
+        ctx: ctx,
+        type: 'rect',
+        style: {fill: {color: 'blue'}},
+        coords: {x: 250, y: 250},
+        dimensions: {w: 20, h:20},
+        transform: {
+            rotate: .35,
+            center: false // fails
         }
     })
 
