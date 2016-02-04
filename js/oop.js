@@ -14,7 +14,6 @@
             name: null,
             prev: null
         }
-        return Canvas
     }
 
     var cp = Canvas.prototype;
@@ -29,7 +28,15 @@
         var c = pm.getCanvasApi.call(this),
             ctx = c.ctx,
             config = c.config,
-            plots = this.raw.plots;
+            plots = this.raw.plots,
+            in_path = false,
+            segmentTypes = {
+                lineTo: 1,
+                arc: 1,
+                rect: 1,
+                quadraticCurveTo: 1,
+                bezierCurveTo: 1
+            };
         return {
             clear: function () {
                 if (arguments.length == 0) ctx.clearRect(0,0,config.width,config.height);
@@ -151,25 +158,24 @@
              */
             shape: function (opts) {
                 var opts = opts || {}, 
-                    $this = opts.ctx,
                     tx = 0, ty = 0, ox = 0, oy = 0;
                 if(opts.offset) {
                     ox = opts.offset.x;
                     oy = opts.offset.y;
                 }
-                $this.pushState();
-                if (opts.style) $this.setStyles(opts.style);
+                this.pushState();
+                if (opts.style) this.setStyles(opts.style);
                 if (opts.transform) {
                     tx = (opts.transform.center) ? -(opts.dimensions.w / 2) : 0,
                     ty = (opts.transform.center) ? -(opts.dimensions.h / 2) : 0;
-                    $this.transform({
+                    this.transform({
                         translate: { x: opts.coords.x, y: opts.coords.y },
                         rotate: (opts.transform.rotate) ? opts.transform.rotate : 0.1,
                         scale: (opts.transform.scale) ? opts.transform.scale : 0
                     })
                 }
-                shapes[opts.type].call($this, tx, ty, ox, oy, opts);
-                $this.popState();
+                shapes[opts.type].call(this, tx, ty, ox, oy, opts);
+                this.popState();
 
                 return this
             },
@@ -238,7 +244,7 @@
         config.height = ("height" in config) ? config.height : 150;
         config.matchDimensions = ("matchDimensions" in config) ? config.matchDimensions : true;
         config.type = (config.type == "webgl") ? "experimental-webgl" : "2d";
-        config.name = (!config.name) ? 'canvas-' : config.name;
+        config.name = (!config.name) ? 'canvas-' + pm.getCanvasLength.call(this) : config.name;
 
         var canvas = document.createElement("canvas"),
             context = canvas.getContext(config.type);
@@ -263,6 +269,17 @@
     }
     cp.element = function () {
         return this.raw.canvas[this.current.name].element;
+    }
+    cp.getContext = function (name) {
+        if(!name) return this.raw.canvas[this.current.name].ctx;
+        else {
+            if(this.raw.canvas.hasOwnProperty(name)) return this.raw.canvas[name].ctx
+            else throw new Error('canvas context does not exist!')
+        }
+    }
+    cp.getVirtualCanvas = function (name) {
+        if(this.raw.canvas.hasOwnProperty(name) && this.raw.canvas[name].virtual) return this.raw.canvas[name].ctx.canvas
+        else throw new Error('virtual canvas does not exist!')
     }
     cp.clear = function () {
         var c = pm.getCanvasApi.call(this),
@@ -384,6 +401,10 @@
         getCanvasApi: function (target) {
             if(target && this.raw.canvas.hasOwnProperty(target)) return this.raw.canvas[target]
             else return this.raw.canvas[this.current.name]
+        },
+        getCanvasLength: function () {
+            var cvs = this.raw.canvas;
+            return Object.keys(cvs).length
         },
         convertToDecimal: function (axis) {
             var config = pm.getCanvasApi.call(this).config;
