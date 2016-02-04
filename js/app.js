@@ -58,8 +58,6 @@ CAD.plot('axis', function (cx, cy) {
 }).done()
 .grid().build('standard',500,500,20)
     .use(function (item, collection, index) {
-        var self = this;
-        console.log();
         this.getContext().drawImage(this.getVirtualCanvas('virtual-bitmap'), item.x, item.y);
     })
 .done();

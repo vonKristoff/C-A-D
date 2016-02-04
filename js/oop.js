@@ -372,10 +372,16 @@
                 add(id, grid);
                 return this
             },
-            use: function (cmd) {
-                this.get().blocks.forEach(function (item, index) {
-                    cmd.apply($this, [item, grids, index])
-                })
+            use: function (name, cmd) {
+                if(name !== 'function') {
+                    this.get().blocks.forEach(function (item, index) {
+                        name.apply($this, [item, grids, index])
+                    })
+                } else {
+                    this.get(name).blocks.forEach(function (item, index) {
+                        cmd.apply($this, [item, grids, index])
+                    })
+                }
                 return this
             },
             done: function () { return $this }
