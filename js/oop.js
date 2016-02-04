@@ -14,10 +14,7 @@
             name: null,
             prev: null
         }
-
-        this.data = function (target) {
-            return pm.getCanvasApi.call(this, target) 
-        }
+        return Canvas
     }
 
     var cp = Canvas.prototype;
@@ -153,8 +150,8 @@
              *  dimensions: {w,h}, offset: {x,y}, transform: {} }
              */
             shape: function (opts) {
-                var $this = opts.ctx;
                 var opts = opts || {}, 
+                    $this = opts.ctx,
                     tx = 0, ty = 0, ox = 0, oy = 0;
                 if(opts.offset) {
                     ox = opts.offset.x;
@@ -177,9 +174,9 @@
                 return this
             },
             getImage: function (opts) {
-                /** will fail due to canvas not being defined */
                 var tmp, 
-                    tmp_c;
+                    tmp_c,
+                    canvas = this.element();
 
                 opts = opts || {};
 
