@@ -1,35 +1,35 @@
 (function (Global) {
 
-    // Constructor
+    /**
+     * Constructor
+     */
     function Canvas () {
+
         this.raw = {
-            canvas: {},
-            vctx: {},
-            plots: {},
-            grids: {}
+            canvas: {}, // canvas collections
+            plots: {},  // user defined actions
+            grids: {}   // user defined grids
         }
         this.current = {
-            name: '',
-            c: function () {
-                return pm.getCanvasApi.call(this)
-            }.bind(this)
+            name: null,
+            prev: null
         }
 
         this.data = function (target) {
-            return pm.getCanvasApi.call(this, target)   
+            return pm.getCanvasApi.call(this, target) 
         }
     }
 
     var cp = Canvas.prototype;
 
     cp.plot = function (name, action) {
-        if(typeof action != 'function') throw new Error("action needs to be a Function");
+        if(typeof action !== 'function') throw new Error("action needs to be a Function");
         else this.raw.plots[name] = action;
         return this;
     }
 
     cp.draw = function () {
-        var c = this.data(),
+        var c = pm.getCanvasApi.call(this),
             ctx = c.ctx,
             config = c.config,
             plots = this.raw.plots;
@@ -76,7 +76,7 @@
                 if (in_path) throw new Error("A path is still currently being defined. End it first.");
 
                 ctx.beginPath();
-                if (x != null && y != null) ctx.moveTo(x, y);
+                if (x !== null && y !== null) ctx.moveTo(x, y);
                 in_path = true;
 
                 return this;
@@ -255,25 +255,25 @@
         }
 
         this.raw.canvas[config.name] = {
+            virtual: false,
             element: canvas,
             config: config,
             ctx: context
         }
         
         pm.setContext.call(this, config.name)
-        console.log(this);
         return this;
     }
     cp.element = function () {
         return this.raw.canvas[this.current.name].element;
     }
     cp.clear = function () {
-        var c = this.current.c(),
+        var c = pm.getCanvasApi.call(this),
             ctx = c.ctx,
             config = c.config;
-        if (arguments.length == 0) ctx.clearRect(0,0,config.width,config.height);
-        else ctx.clearRect.apply(ctx, arguments);
 
+        if (arguments.length == 0) ctx.clearRect(0, 0, config.width, config.height);
+        else ctx.clearRect.apply(ctx, arguments);
         return this;
     }
     cp.plot = function (name, action) {
@@ -289,26 +289,26 @@
     }
     cp.bitmap = function () {
         var $this = this;
-        function switchContext (id) {
-            ctx = (!id) ? pm.getContext(). : this.data().vctx[id];
-            return this
-        }
         return {
             create: function (name, opts, cmd) {
-
                 var tmp = document.createElement('canvas');
                 tmp.width = opts.width; tmp.height = opts.height;
-                this.raw.vctx[name] = tmp.getContext("2d");
+                $this.raw.canvas[name] = {
+                    virtual: true,
+                    element: false,
+                    config: opts,
+                    ctx: tmp.getContext("2d")
+                }
                 return this
             },
             use: function (name, cmd) {
-                switchContext(name);
+                pm.setContext.call($this, name)
                 cmd.call($this)
                 return this
             },
             done: function () {
-                switchContext();
-                return this
+                pm.setContext.call($this) // revert to previous canvas context
+                return $this
             }
         }
     }
@@ -373,7 +373,12 @@
      */
     var pm = {
         setContext: function (target) {
-            this.current.name = target;
+            if(!target) {
+                this.current.name = this.current.prev;
+            } else {
+                this.current.prev = this.current.name;
+                this.current.name = target;
+            }
         },
         getContext: function (target) {
             if(target && this.raw.canvas.hasOwnProperty(target)) return this.raw.canvas[target].ctx;
@@ -382,6 +387,20 @@
         getCanvasApi: function (target) {
             if(target && this.raw.canvas.hasOwnProperty(target)) return this.raw.canvas[target]
             else return this.raw.canvas[this.current.name]
+        },
+        convertToDecimal: function (axis) {
+            var config = pm.getCanvasApi.call(this).config;
+            return {
+                x: config.width / axis.x,
+                y: config.height / axis.y
+            }
+        },
+        convertToPixel: function (axis) {
+            var config = pm.getCanvasApi.call(this).config;
+            return {
+                x: config.width * axis.x,
+                y: config.height * axis.y
+            }
         }
     }
     /**
@@ -406,8 +425,3 @@
     Global.CAD = new Canvas();
 
 })(window);
-
-document.body.appendChild(CAD.create().element());
-
-console.log(CAD.draw().clear().done())
-

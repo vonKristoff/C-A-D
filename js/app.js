@@ -1,3 +1,6 @@
+document.body.appendChild(CAD.create().element());
+
+console.log(CAD.draw().clear().done())
 
 // var ctx = cad({
 //   width: 500,
