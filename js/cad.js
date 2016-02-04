@@ -74,8 +74,11 @@
             return api;
         }
         function print(name, args) {
-            cache[name].apply(this, args);
-            return api;
+            if(!cache[name]) throw new Error("plot doesn't exist in this context");
+            else { 
+                cache[name].apply(this, args);
+                return api;
+            } 
         }
         function setStyles(styles) {
             styles = styles || {};
