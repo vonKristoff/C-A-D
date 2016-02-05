@@ -43,6 +43,7 @@
                 else ctx.clearRect.apply(ctx, arguments);
                 return this
             },
+
             print: function (name, args) {
                 if(!plots[name]) throw new Error("plot doesn't exist in this context");
                 else plots[name].apply(this, args);
@@ -75,6 +76,17 @@
                     if ("baseline" in styles.text) ctx.textBaseline = styles.text.baseline;
                 }
                 return this;
+            },
+            /**
+             * Cardinal Spine lib
+             * https://github.com/epistemex/cardinal-spline-js
+             */
+            spline: function (points) {
+                ctx.beginPath();
+                ctx.curve(points, 1);
+                ctx.stroke();
+                ctx.closePath();
+                return this
             },
             startPath: function (x, y) {
                 if (in_path) throw new Error("A path is still currently being defined. End it first.");
